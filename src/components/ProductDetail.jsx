@@ -1,9 +1,10 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { Star, MapPin, Tractor, ShoppingCart, ShieldCheck, Share2, Barcode as BarcodeIcon } from 'lucide-react';
+import { Star, MapPin, Tractor, ShoppingCart, ShieldCheck, Share2, Barcode as BarcodeIcon, QrCode as QrCodeIcon } from 'lucide-react';
 import Barcode from 'react-barcode';
 import { motion } from 'framer-motion';
+import { QRCodeCanvas } from 'qrcode.react';
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -102,14 +103,51 @@ const ProductDetail = () => {
                         </button>
                     </div>
 
-                    {/* Barcode Section */}
-                    <div className="pt-8 border-t border-slate-100">
-                        <div className="flex items-center space-x-2 rtl:space-x-reverse mb-4 text-slate-400 font-bold text-xs uppercase tracking-widest">
-                            <BarcodeIcon size={14} />
-                            <span>Product Authenticity Barcode</span>
+                    {/* Barcode & QR Code Section */}
+                    <div className="pt-8 border-t border-slate-100 flex flex-wrap gap-8">
+                        {/* Barcode */}
+                        <div className="flex-1 min-w-[200px]">
+                            <div className="flex items-center space-x-2 rtl:space-x-reverse mb-4 text-slate-400 font-bold text-xs uppercase tracking-widest">
+                                <BarcodeIcon size={14} />
+                                <span>Product Barcode</span>
+                            </div>
+                            <div className="bg-white p-4 rounded-2xl border border-slate-100 inline-block shadow-sm">
+                                <Barcode value={`PROD-${product.id}`} height={50} width={1.5} fontSize={12} />
+                            </div>
                         </div>
-                        <div className="bg-white p-4 rounded-2xl border border-slate-100 inline-block">
-                            <Barcode value={`PROD-${product.id}`} height={50} width={1.5} fontSize={12} />
+
+                        {/* QR Code */}
+                        <div className="flex-1 min-w-[200px]">
+                            <div className="flex items-center space-x-2 rtl:space-x-reverse mb-4 text-slate-400 font-bold text-xs uppercase tracking-widest">
+                                <QrCodeIcon size={14} />
+                                <span>Product QR Code (Scan for Info)</span>
+                            </div>
+                            <div className="bg-white p-4 rounded-2xl border border-slate-100 inline-block shadow-sm">
+                                <QRCodeCanvas
+                                    value={JSON.stringify({
+                                        id: product.id,
+                                        name: product.name[lang],
+                                        price: `${product.price} DZD`,
+                                        farm: product.farmName,
+                                        location: `${product.baladiya}, ${product.wilaya}`,
+                                        url: window.location.href
+                                    }, null, 2)}
+                                    size={100}
+                                    level={"H"}
+                                    includeMargin={false}
+                                    imageSettings={{
+                                        src: "/favicon.svg", // Assuming there's a logo or favicon
+                                        x: undefined,
+                                        y: undefined,
+                                        height: 20,
+                                        width: 20,
+                                        excavate: true,
+                                    }}
+                                />
+                            </div>
+                            <p className="mt-2 text-[10px] text-slate-400 max-w-[150px]">
+                                Contains encrypted product identity and traceability data.
+                            </p>
                         </div>
                     </div>
                 </motion.div>

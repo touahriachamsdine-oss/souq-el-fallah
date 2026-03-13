@@ -1,140 +1,191 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
-import { translations } from '../data/translations';
+import React, { createContext, useState, useEffect, useMemo, useContext } from 'react';
+import { translations } from './translations';
 
-const AppContext = createContext();
+export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
     const [lang, setLang] = useState('fr'); // Default to French
     const [user, setUser] = useState(null); // Current user
-    const [cart, setCart] = useState([]);
+    const [cart, setCart] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const savedCart = localStorage.getItem('cart');
+            return savedCart ? JSON.parse(savedCart) : [];
+        }
+        return [];
+    });
+
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        }
+        return false;
+    });
+
+    useEffect(() => {
+        if (isDarkMode) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    }, [isDarkMode]);
+
+    useEffect(() => {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }, [cart]);
+
     const [products, setProducts] = useState([
         {
             id: 1,
-            name: { en: 'Organic Honey', fr: 'Miel Bio de Montagne', ar: 'عسل جبلي طبيعي' },
-            price: 2500,
-            category: 'honey',
-            farmerId: 101,
-            farmName: 'Beni Slimane Farm',
-            wilaya: '25',
-            baladiya: 'Constantine',
-            image: 'https://images.unsplash.com/photo-1587049633562-ad36026d0210?auto=format&fit=crop&q=80&w=400',
-            rating: 4.8,
-            reviews: [
-                { user: 'Ahmed', rating: 5, comment: 'Excellent quality! Tastes pure.' }
-            ],
-            stock: 50
+            name: {
+                fr: "Pommes de Terre de Oued Souf",
+                ar: "بطاطس وادي سوف",
+                en: "Oued Souf Potatoes"
+            },
+            description: {
+                fr: "Pommes de terre de qualité supérieure cultivées dans le désert.",
+                ar: "بطاطس عالية الجودة مزروعة في الصحراء.",
+                en: "Premium quality potatoes grown in the desert."
+            },
+            price: 75,
+            unit: "kg",
+            image: "https://images.unsplash.com/photo-1518977676601-b53f02bad673?w=500&auto=format",
+            category: "Legumes",
+            origin: "Oued Souf",
+            farmName: "Ferme Sahraoui",
+            wilaya: "El Oued",
+            baladiya: "Oued Souf",
+            farmerId: 101
         },
         {
             id: 2,
-            name: { en: 'Extra Virgin Olive Oil', fr: 'Huile d\'Olive Vierge Extra', ar: 'زيت زيتون بكر ممتاز' },
-            price: 1200,
-            category: 'other',
-            farmerId: 102,
-            farmName: 'Djurdjura Harvest',
-            wilaya: '15',
-            baladiya: 'Tizi Ouzou',
-            image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=400',
-            rating: 4.9,
-            reviews: [],
-            stock: 100
+            name: {
+                fr: "Dattes Deglet Nour",
+                ar: "تمر دقلة نور",
+                en: "Deglet Nour Dates"
+            },
+            description: {
+                fr: "Les meilleures dattes du monde, miel naturel.",
+                ar: "أفضل التمور في العالم، عسل طبيعي.",
+                en: "The best dates in the world, natural honey."
+            },
+            price: 450,
+            unit: "kg",
+            image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=500&auto=format",
+            category: "Fruits",
+            origin: "Biskra",
+            farmName: "Coopérative El Nakhla",
+            wilaya: "Biskra",
+            baladiya: "Tolga",
+            farmerId: 102
         },
         {
             id: 3,
-            name: { en: 'Traditional Sheep Cheese', fr: 'Fromage de Brebis Traditionnel', ar: 'جبن غنم تقليدي' },
-            price: 1800,
-            category: 'dairy',
-            farmerId: 101,
-            farmName: 'Aurès Dairy',
-            wilaya: '05',
-            baladiya: 'Batna',
-            image: 'https://images.unsplash.com/photo-1486297678162-ad2a19b85f30?auto=format&fit=crop&q=80&w=400',
-            rating: 4.7,
-            reviews: [],
-            stock: 30
+            name: {
+                fr: "Huile d'Olive Extra Vierge",
+                ar: "زيت زيتون بكر ممتاز",
+                en: "Extra Virgin Olive Oil"
+            },
+            description: {
+                fr: "Pressée à froid, goût authentique de Kabylie.",
+                ar: "معصور على البارد، طعم أصيل من منطقة القبائل.",
+                en: "Cold pressed, authentic taste from Kabylie."
+            },
+            price: 900,
+            unit: "L",
+            image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=500&auto=format",
+            category: "Epicerie",
+            origin: "Béjaïa",
+            farmName: "Moulins d'Afrique",
+            wilaya: "Béjaïa",
+            baladiya: "Akbou",
+            farmerId: 103
         },
         {
             id: 4,
-            name: { en: 'Deglet Nour Dates', fr: 'Dattes Deglet Nour', ar: 'تمور دقلة نور' },
-            price: 850,
-            category: 'fruits',
-            farmerId: 103,
-            farmName: 'Tolga Palms',
-            wilaya: '07',
-            baladiya: 'Biskra',
-            image: 'https://images.unsplash.com/photo-1596735759715-998f45a08332?q=80&w=400&auto=format&fit=crop',
-            rating: 5.0,
-            reviews: [],
-            stock: 500
+            name: {
+                fr: "Tomates Fraîches",
+                ar: "طماطم طازجة",
+                en: "Fresh Tomatoes"
+            },
+            description: {
+                fr: "Tomates charnues et juteuses.",
+                ar: "طماطم لحمية وعصرية.",
+                en: "Fleshy and juicy tomatoes."
+            },
+            price: 120,
+            unit: "kg",
+            image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500&auto=format",
+            category: "Legumes",
+            origin: "Adrar",
+            farmName: "Le Potager Bio",
+            wilaya: "Adrar",
+            baladiya: "Reggane",
+            farmerId: 104
         },
         {
             id: 5,
-            name: { en: 'Organic Tomatoes', fr: 'Tomates Bio', ar: 'طماطم عضوية' },
-            price: 120,
-            category: 'vegetables',
-            farmerId: 104,
-            farmName: 'Mitidja Greenhouses',
-            wilaya: '09',
-            baladiya: 'Blida',
-            image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?q=80&w=400&auto=format&fit=crop',
-            rating: 4.5,
-            reviews: [],
-            stock: 200
-        },
-        {
-            id: 6,
-            name: { en: 'Fresh Free-Range Eggs', fr: 'Œufs Fermiers Frais', ar: 'بيض بلدي طازج' },
-            price: 550,
-            category: 'dairy',
-            farmerId: 105,
-            farmName: 'Setif Poultry',
-            wilaya: '19',
-            baladiya: 'Setif',
-            image: 'https://plus.unsplash.com/premium_photo-1668618991404-54c23940c6a5?q=80&w=400&auto=format&fit=crop',
-            rating: 4.6,
-            reviews: [],
-            stock: 60
-        },
-        {
-            id: 7,
-            name: { en: 'Premium Wheat Flour', fr: 'Farine de Blé Premium', ar: 'دقيق قمح ممتاز' },
-            price: 90,
-            category: 'grains',
-            farmerId: 106,
-            farmName: 'Tiaret Golden Fields',
-            wilaya: '14',
-            baladiya: 'Tiaret',
-            image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=400&auto=format&fit=crop',
-            rating: 4.8,
-            reviews: [],
-            stock: 1000
-        },
-        {
-            id: 8,
-            name: { en: 'Fresh Lamb Meat', fr: 'Viande d\'Agneau Fraîche', ar: 'لحم خروف طازج' },
-            price: 2400,
-            category: 'meat',
-            farmerId: 107,
-            farmName: 'Djelfa Steppe Farm',
-            wilaya: '17',
-            baladiya: 'Djelfa',
-            image: 'https://images.unsplash.com/photo-1603048297172-c92544798d5e?q=80&w=400&auto=format&fit=crop',
-            rating: 4.9,
-            reviews: [],
-            stock: 20
+            name: {
+                fr: "Clémentines de la Mitidja",
+                ar: "كلمنتين المتيجة",
+                en: "Mitidja Clementines"
+            },
+            description: {
+                fr: "Sucrées et faciles à éplucher.",
+                ar: "حلوة وسهلة التقشير.",
+                en: "Sweet and easy to peel."
+            },
+            price: 200,
+            unit: "kg",
+            image: "https://images.unsplash.com/photo-1557800636-894a64c1696f?w=500&auto=format",
+            category: "Fruits",
+            origin: "Blida",
+            farmName: "Vergers de la Mitidja",
+            wilaya: "Blida",
+            baladiya: "Boufarik",
+            farmerId: 105
         }
     ]);
 
-    const t = useMemo(() => {
-        return (key) => {
-            const keys = key.split('.');
-            let result = translations[lang];
-            for (const k of keys) {
-                if (!result) return key;
-                result = result[k];
-            }
-            return result || key;
-        };
+    const t = useMemo(() => (path) => {
+        const keys = path.split('.');
+        let result = translations[lang];
+        for (const key of keys) {
+            result = result?.[key];
+        }
+        return result || path;
     }, [lang]);
+
+    const addToCart = (product, quantity = 1) => {
+        setCart(prev => {
+            const existing = prev.find(item => item.id === product.id);
+            if (existing) {
+                return prev.map(item => 
+                    item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
+                );
+            }
+            return [...prev, { ...product, quantity }];
+        });
+    };
+
+    const removeFromCart = (productId) => {
+        setCart(prev => prev.filter(item => item.id !== productId));
+    };
+
+    const updateQuantity = (productId, quantity) => {
+        if (quantity < 1) return removeFromCart(productId);
+        setCart(prev => prev.map(item => 
+            item.id === productId ? { ...item, quantity } : item
+        ));
+    };
+
+    const clearCart = () => setCart([]);
+
+    const cartCount = useMemo(() => cart.reduce((acc, item) => acc + item.quantity, 0), [cart]);
+
+    const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
     const value = {
         lang,
@@ -146,6 +197,15 @@ export const AppProvider = ({ children }) => {
         setProducts,
         cart,
         setCart,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+        cartCount,
+        darkMode: isDarkMode,
+        toggleDarkMode,
+        isDarkMode,
+        setIsDarkMode,
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

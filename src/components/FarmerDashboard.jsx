@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { Plus, Trash2, Edit3, Barcode as BarcodeIcon, Package, DollarSign, Image as ImageIcon, Star, Download, Warehouse } from 'lucide-react';
 import Barcode from 'react-barcode';
+import QRCode from 'react-qr-code';
 import { motion, AnimatePresence } from 'framer-motion';
 import { categories } from '../data/algeria';
 
@@ -9,6 +10,7 @@ const FarmerDashboard = () => {
     const { user, products, setProducts, t, lang } = useApp();
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState(null);
+    const [viewingLabel, setViewingLabel] = useState(null);
 
     const [newProduct, setNewProduct] = useState({
         name: { en: '', fr: '', ar: '' },
@@ -94,6 +96,7 @@ const FarmerDashboard = () => {
                             <th className="px-6 py-4">{t('common.price')}</th>
                             <th className="px-6 py-4">Stock</th>
                             <th className="px-6 py-4">Barcode</th>
+                            <th className="px-6 py-4">Barcode / QR Code</th> {/* Updated header */}
                             <th className="px-6 py-4 text-center">Actions</th>
                         </tr>
                     </thead>
@@ -114,12 +117,28 @@ const FarmerDashboard = () => {
                                 <td className="px-6 py-4 font-black text-dz-green">{p.price} DZD</td>
                                 <td className="px-6 py-4 font-medium text-slate-600">{p.stock}</td>
                                 <td className="px-6 py-4">
-                                    <div className="scale-75 origin-left">
-                                        <Barcode value={`PROD-${p.id}`} height={30} width={1} fontSize={10} />
+                                    <div className="flex flex-col gap-3">
+                                        <div className="scale-75 origin-left bg-white p-2 rounded border border-slate-100">
+                                            <Barcode value={`PROD-${p.id}`} height={25} width={1} fontSize={10} />
+                                        </div>
+                                        <div className="bg-white p-2 rounded border border-slate-100 inline-flex flex-col items-center gap-1 w-fit">
+                                            <QRCode 
+                                                value={`${window.location.origin}/trace/${p.id}`}
+                                                size={48}
+                                                fgColor="#15803d"
+                                            />
+                                            <span className="text-[8px] uppercase font-bold text-slate-400">TRACE QR</span>
+                                        </div>
                                     </div>
                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="flex items-center justify-center space-x-2 rtl:space-x-reverse">
+                                        <button 
+                                            onClick={() => setViewingLabel(p)}
+                                            className="p-2 text-slate-400 hover:text-dz-green bg-slate-100 rounded-lg title='Print Label'"
+                                        >
+                                            <Download size={18} />
+                                        </button>
                                         <button className="p-2 text-slate-400 hover:text-dz-green bg-slate-100 rounded-lg"><Edit3 size={18} /></button>
                                         <button onClick={() => deleteProduct(p.id)} className="p-2 text-slate-400 hover:text-dz-red bg-slate-100 rounded-lg"><Trash2 size={18} /></button>
                                     </div>
@@ -165,6 +184,81 @@ const FarmerDashboard = () => {
                                     <button type="submit" className="flex-1 btn-primary py-3">Save Product</button>
                                 </div>
                             </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Label Preview Modal */}
+            <AnimatePresence>
+                {viewingLabel && (
+                    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="bg-white rounded-[2rem] p-10 max-w-lg w-full shadow-2xl overflow-hidden relative"
+                        >
+                            <button 
+                                onClick={() => setViewingLabel(null)}
+                                className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-600 bg-slate-50 rounded-full"
+                            >
+                                <Trash2 size={20} />
+                            </button>
+
+                            <div className="text-center space-y-8" id="printable-label">
+                                <div className="space-y-2">
+                                    <h2 className="text-3xl font-black text-slate-800 uppercase tracking-tight">
+                                        {viewingLabel.name[lang]}
+                                    </h2>
+                                    <div className="flex items-center justify-center space-x-2 text-dz-green font-bold">
+                                        <Warehouse size={16} />
+                                        <span>{viewingLabel.farmName}</span>
+                                    </div>
+                                </div>
+
+                                <div className="bg-slate-50 p-8 rounded-[2rem] border-2 border-dashed border-slate-200 flex flex-col items-center space-y-6">
+                                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                                        <QRCode 
+                                            value={`${window.location.origin}/trace/${viewingLabel.id}`}
+                                            size={160}
+                                            fgColor="#15803d"
+                                            level="H"
+                                        />
+                                    </div>
+                                    <div className="bg-white p-4 rounded-xl border border-slate-100">
+                                        <Barcode 
+                                            value={`DZ-FARM-${viewingLabel.id}`} 
+                                            width={1.5} 
+                                            height={40}
+                                            fontSize={12}
+                                            background="#ffffff"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4 text-sm font-medium text-slate-500">
+                                    <div className="bg-slate-50 p-4 rounded-2xl">
+                                        <p className="text-[10px] uppercase tracking-wider mb-1">Origin</p>
+                                        <p className="text-slate-800 font-bold">{user?.wilayaName}</p>
+                                    </div>
+                                    <div className="bg-slate-50 p-4 rounded-2xl">
+                                        <p className="text-[10px] uppercase tracking-wider mb-1">Batch Code</p>
+                                        <p className="text-slate-800 font-bold">#{viewingLabel.id.toString().slice(-6)}</p>
+                                    </div>
+                                </div>
+
+                                <button 
+                                    onClick={() => window.print()} 
+                                    className="w-full btn-primary py-4 flex items-center justify-center space-x-3 rtl:space-x-reverse"
+                                >
+                                    <Download size={20} />
+                                    <span>Print Packing Label</span>
+                                </button>
+                                <p className="text-[10px] text-slate-400 font-medium italic">
+                                    Scan QR code to view farm certificate and chemical-free labs results
+                                </p>
+                            </div>
                         </motion.div>
                     </div>
                 )}

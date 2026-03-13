@@ -7,21 +7,41 @@
   --dz-red: #D21034;
 }
 
+.dark {
+  --dz-green: #10b981;
+}
+
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-slate-50 text-slate-900 antialiased transition-colors duration-300;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+.dark body {
+  @apply bg-slate-950 text-slate-50;
 }
 
 .glass {
   @apply bg-white/70 backdrop-blur-xl border border-white/20;
 }
 
+.dark .glass {
+  @apply bg-slate-900/70 border-white/10;
+}
+
 .glass-card {
   @apply bg-white/80 backdrop-blur-lg border border-white/40 shadow-xl shadow-slate-200/40 rounded-2xl transition-all duration-300;
 }
 
+.dark .glass-card {
+  @apply bg-slate-900/80 border-white/5 shadow-none;
+}
+
 .glass-card:hover {
   @apply transform -translate-y-1 shadow-2xl shadow-slate-200/60 bg-white/90;
+}
+
+.dark .glass-card:hover {
+  @apply bg-slate-800/90 border-emerald-500/20 shadow-lg shadow-emerald-500/5;
 }
 
 .dz-gradient {
@@ -70,8 +90,16 @@ html[lang="ar"] body {
     @apply bg-white text-slate-700 border border-slate-200 px-6 py-2.5 rounded-xl font-bold hover:bg-slate-50 transition-all active:scale-95 shadow-sm hover:border-slate-300;
   }
 
+  .dark .btn-secondary {
+    @apply bg-slate-900 text-slate-300 border-white/10 hover:bg-slate-800;
+  }
+
   .input-field {
     @apply w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-dz-green/10 focus:border-dz-green outline-none transition-all placeholder:text-slate-400 font-medium;
+  }
+
+  .dark .input-field {
+    @apply bg-slate-900 border-white/10 text-white focus:ring-emerald-500/10 focus:border-emerald-500;
   }
 }
 

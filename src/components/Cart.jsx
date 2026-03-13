@@ -2,6 +2,7 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import { Trash2, ShoppingBag, ArrowRight, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const Cart = () => {
     const { cart, setCart, t, lang } = useApp();
@@ -77,10 +78,12 @@ const Cart = () => {
                                 <span>Total</span>
                                 <span>{total + 200} DZD</span>
                             </div>
-                            <button className="w-full bg-white text-dz-green py-4 rounded-2xl font-black hover:bg-slate-100 transition-all shadow-xl flex items-center justify-center space-x-2 rtl:space-x-reverse">
-                                <span>Checkout</span>
-                                {lang === 'ar' ? <ArrowLeft size={20} /> : <ArrowRight size={20} />}
-                            </button>
+                            <Link to="/checkout" className="block w-full">
+                                <button className="btn-primary w-full py-4 text-lg flex items-center justify-center space-x-2 rtl:space-x-reverse">
+                                    <span>Checkout</span>
+                                    {lang === 'ar' ? <ArrowLeft size={20} /> : <ArrowRight size={20} />}
+                                </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

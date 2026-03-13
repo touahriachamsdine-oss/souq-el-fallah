@@ -1,26 +1,23 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import ProductCard from './ProductCard';
-import { Search, Filter, SlidersHorizontal, ChevronDown } from 'lucide-react';
-import { categories, wilayas } from '../data/algeria';
-import { motion } from 'framer-motion';
+import { Search } from 'lucide-react';
+import { categories } from '../data/algeria';
+import { motion as Motion } from 'framer-motion';
 
 const Marketplace = () => {
     const { products, t, lang } = useApp();
     const [searchTerm, setSearchTerm] = useState('');
     const [activeCategory, setActiveCategory] = useState('all');
-    const [showFilters, setShowFilters] = useState(false);
-    const [filterWilaya, setFilterWilaya] = useState('');
 
     const filteredProducts = useMemo(() => {
         return products.filter(p => {
             const matchesSearch = p.name[lang].toLowerCase().includes(searchTerm.toLowerCase()) ||
                 p.farmName.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesCategory = activeCategory === 'all' || p.category === activeCategory;
-            const matchesWilaya = !filterWilaya || p.wilaya === filterWilaya;
-            return matchesSearch && matchesCategory && matchesWilaya;
+            return matchesSearch && matchesCategory;
         });
-    }, [products, searchTerm, activeCategory, filterWilaya, lang]);
+    }, [products, searchTerm, activeCategory, lang]);
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 min-h-screen">
@@ -34,7 +31,7 @@ const Marketplace = () => {
 
                 <div className="relative z-10 w-full px-8 md:px-20 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                     <div className="space-y-6">
-                        <motion.div
+                        <Motion.div
                             initial={{ opacity: 0, x: -50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8 }}
@@ -49,8 +46,8 @@ const Marketplace = () => {
                                     {lang === 'ar' ? 'إلى مائدتك' : lang === 'fr' ? 'à votre table' : 'to Your Table'}
                                 </span>
                             </h1>
-                        </motion.div>
-                        <motion.p
+                        </Motion.div>
+                        <Motion.p
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
@@ -59,10 +56,10 @@ const Marketplace = () => {
                             {lang === 'ar' ? 'اكتشف أجود المنتجات الفلاحية الجزائرية، مباشرة من المنتجين المحليين.' :
                                 lang === 'fr' ? 'Découvrez les meilleurs produits agricoles algériens, directement auprès des producteurs locaux.' :
                                     'Discover the finest Algerian agricultural products, directly from local producers.'}
-                        </motion.p>
+                        </Motion.p>
                     </div>
                     {/* Hero Image/Illustration possibility - kept clean for now or add floating element */}
-                    <motion.div
+                    <Motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.6 }}
@@ -86,7 +83,7 @@ const Marketplace = () => {
                                 </div>
                             </div>
                         </div>
-                    </motion.div>
+                    </Motion.div>
                 </div>
             </section>
 

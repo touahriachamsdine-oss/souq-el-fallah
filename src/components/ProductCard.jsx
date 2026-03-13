@@ -1,79 +1,101 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Star, MapPin, ShoppingCart } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Plus, Check, ShoppingCart, Heart, TrendingUp } from 'lucide-react';
 
 const ProductCard = ({ product }) => {
-    const { lang, t, setCart } = useApp();
+    const { lang, t, addToCart } = useApp();
+    const [added, setAdded] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
 
-    const handleAddToCart = (e) => {
-        e.preventDefault();
-        setCart(prev => [...prev, product]);
+    const handleAddToCart = () => {
+        addToCart(product);
+        setAdded(true);
+        setTimeout(() => setAdded(false), 2000);
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            whileHover={{ y: -8, scale: 1.02 }}
-            className="glass-card overflow-hidden group relative flex flex-col h-full"
+        <div 
+            className="group relative bg-white dark:bg-slate-900 rounded-[2.5rem] p-4 border border-slate-100 dark:border-slate-800 hover:border-emerald-500/30 dark:hover:border-emerald-500/30 shadow-sm transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-100 dark:hover:shadow-none hover:-translate-y-2"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
         >
-            <Link to={`/product/${product.id}`} className="block relative overflow-hidden h-56 sm:h-64">
-                <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/0 transition-colors z-10" />
-                <img
-                    src={product.image}
-                    alt={product.name[lang]}
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out"
-                />
-
-                {/* Badges Overlay */}
-                <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
-                    <span className="bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-xs font-black text-slate-800 shadow-sm uppercase tracking-wider border border-white/50">
-                        {product.category}
+            {/* Badges */}
+            <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
+                {product.isFresh && (
+                    <span className="bg-emerald-500/90 text-white text-[10px] font-black px-3 py-1.5 rounded-full backdrop-blur-md uppercase tracking-widest shadow-lg shadow-emerald-200/50">
+                        {t('common.fresh')}
                     </span>
-                    {product.stock < 10 && (
-                        <span className="bg-dz-red/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm animate-pulse">
-                            {lang === 'ar' ? 'كمية محدودة' : 'Low Stock'}
-                        </span>
-                    )}
-                </div>
-            </Link>
+                )}
+                {product.isTrending && (
+                    <span className="bg-amber-500/90 text-white text-[10px] font-black px-3 py-1.5 rounded-full backdrop-blur-md uppercase tracking-widest shadow-lg shadow-amber-200/50 flex items-center gap-1">
+                        <TrendingUp className="w-3 h-3" />
+                        Trending
+                    </span>
+                )}
+            </div>
 
-            <div className="p-5 flex flex-col flex-grow space-y-3 relative z-20 bg-white/50 backdrop-blur-md">
-                <div className="flex justify-between items-start">
-                    <Link to={`/product/${product.id}`} className="hover:text-dz-green transition-colors">
-                        <h3 className="text-lg font-black text-slate-800 line-clamp-1 leading-tight">{product.name[lang]}</h3>
-                    </Link>
-                    <div className="flex items-center space-x-1 rtl:space-x-reverse bg-yellow-400/20 px-2 py-0.5 rounded-lg border border-yellow-400/30">
-                        <Star size={14} className="text-yellow-600 fill-yellow-600" />
-                        <span className="text-xs font-bold text-yellow-800">{product.rating}</span>
-                    </div>
-                </div>
+            <button className="absolute top-6 right-6 z-10 p-3 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-100 dark:border-slate-700 rounded-2xl text-slate-400 hover:text-rose-500 hover:scale-110 active:scale-90 transition-all shadow-sm">
+                <Heart className="w-5 h-5" />
+            </button>
 
-                <div className="flex items-center text-slate-500 text-sm space-x-1.5 rtl:space-x-reverse">
-                    <MapPin size={14} className="text-dz-green flex-shrink-0" />
-                    <span className="line-clamp-1 font-medium text-slate-600">{product.farmName}, {product.baladiya}</span>
-                </div>
-
-                <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-                    <div className="flex flex-col">
-                        <span className="text-xs text-slate-400 font-bold uppercase">{t('common.price') || 'Price'}</span>
-                        <div className="flex items-baseline space-x-1 rtl:space-x-reverse">
-                            <span className="text-2xl font-black text-dz-green">{product.price.toLocaleString()}</span>
-                            <span className="text-xs font-bold text-slate-400">DZD</span>
-                        </div>
-                    </div>
-                    <button
+            {/* Image Container */}
+            <div className="relative aspect-square overflow-hidden rounded-[2rem] bg-slate-50 dark:bg-slate-800/50">
+                <img 
+                    src={product.image} 
+                    alt={product.name[lang]} 
+                    className="h-full w-full object-cover transition-all duration-700 group-hover:scale-110"
+                />
+                
+                {/* Quick Add Overlay */}
+                <div className={`absolute inset-0 bg-emerald-950/20 backdrop-blur-[2px] flex items-center justify-center transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+                    <button 
                         onClick={handleAddToCart}
-                        className="p-3 bg-slate-900 text-white rounded-xl hover:bg-dz-green hover:shadow-lg hover:shadow-dz-green/30 transition-all active:scale-95 group/btn"
-                        title={t('market.addToCart')}
+                        className="bg-white text-emerald-600 px-6 py-3 rounded-2xl font-black text-sm shadow-xl hover:bg-emerald-50 transition-all flex items-center gap-2"
                     >
-                        <ShoppingCart size={20} className="group-active/btn:scale-90 transition-transform" />
+                        <ShoppingCart className="w-4 h-4" />
+                        {t('common.quickAdd')}
                     </button>
                 </div>
             </div>
-        </motion.div>
+
+            {/* Info */}
+            <div className="mt-6 px-4 pb-4">
+                <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest p-1 px-2 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg">
+                        {product.category}
+                    </span>
+                </div>
+                
+                <h3 className="text-xl font-bold text-slate-800 dark:text-white line-clamp-1 mb-2 group-hover:text-emerald-600 transition-colors">
+                    {product.name[lang]}
+                </h3>
+                
+                <div className="flex items-center justify-between mt-6">
+                    <div>
+                        <span className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">
+                            {product.price}
+                        </span>
+                        <span className="text-xs font-bold text-slate-400 ml-1">
+                            DA / {product.unit}
+                        </span>
+                    </div>
+
+                    <button 
+                        onClick={handleAddToCart}
+                        disabled={added}
+                        className={`
+                            p-3 rounded-2xl shadow-lg transition-all transform active:scale-95
+                            ${added 
+                                ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 cursor-default scale-110' 
+                                : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200 dark:shadow-none hover:scale-110'
+                            }
+                        `}
+                    >
+                        {added ? <Check className="w-5 h-5 font-black" /> : <Plus className="w-5 h-5 font-black" />}
+                    </button>
+                </div>
+            </div>
+        </div>
     );
 };
 

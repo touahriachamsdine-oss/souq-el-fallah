@@ -1,71 +1,69 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import Navbar from './components/Navbar';
-import Marketplace from './components/Marketplace';
-import AuthForms from './components/AuthForms';
-import FarmerDashboard from './components/FarmerDashboard';
-import ProductDetail from './components/ProductDetail';
-import Cart from './components/Cart';
+import Hero from './components/Hero';
+import ProductShowcase from './components/ProductShowcase';
+import Footer from './components/Footer';
 
 function App() {
   return (
     <AppProvider>
-      <Router>
-        <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-dz-green/20 selection:text-dz-green">
-          <Navbar />
-          <main className="pb-20">
-            <Routes>
-              <Route path="/" element={<Marketplace />} />
-              <Route path="/login" element={<AuthForms mode="login" />} />
-              <Route path="/signup" element={<AuthForms mode="signup" />} />
-              <Route path="/dashboard" element={<FarmerDashboard />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/cart" element={<Cart />} />
-            </Routes>
-          </main>
+      <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-500">
+        <Navbar />
+        <main>
+          <Hero />
+          
+          {/* Featured Stats Section */}
+          <section className="py-20 relative overflow-hidden bg-slate-50 dark:bg-slate-900/50">
+            <div className="container mx-auto px-6">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+                {[
+                  { label: "Local Producers", value: "2500+" },
+                  { label: "Fresh Daily", value: "100%" },
+                  { label: "Active Users", value: "50k+" },
+                  { label: "Cities Covered", value: "48" }
+                ].map((stat, idx) => (
+                  <div key={idx} className="p-8 bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm text-center group hover:shadow-xl transition-all duration-500">
+                    <p className="text-4xl lg:text-5xl font-black text-emerald-600 mb-2">{stat.value}</p>
+                    <p className="text-slate-500 dark:text-slate-400 font-bold tracking-tight uppercase text-xs">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
 
-          {/* Footer */}
-          <footer className="bg-slate-900 text-white py-12">
-            <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
-              <div className="space-y-4">
-                <h3 className="text-2xl font-black text-dz-lightGreen">Souq El Fallah</h3>
-                <p className="text-slate-400 text-sm">Empowering Algerian farmers and delivering freshness to every home.</p>
-              </div>
-              <div>
-                <h4 className="font-bold mb-4">Marketplace</h4>
-                <ul className="text-slate-400 text-sm space-y-2">
-                  <li>Dairy Products</li>
-                  <li>Fresh Meat</li>
-                  <li>Honey & Sweets</li>
-                  <li>Fruits & Veggies</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-bold mb-4">Support</h4>
-                <ul className="text-slate-400 text-sm space-y-2">
-                  <li>Help Center</li>
-                  <li>Farm Verification</li>
-                  <li>Shipping Info</li>
-                  <li>Contact Us</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-bold mb-4">Admin Divisions</h4>
-                <p className="text-slate-400 text-sm">Supporting all 58 Wilayas across Algeria.</p>
-                <div className="mt-4 flex space-x-4 rtl:space-x-reverse">
-                  <div className="w-8 h-8 rounded-full bg-dz-green"></div>
-                  <div className="w-8 h-8 rounded-full bg-white"></div>
-                  <div className="w-8 h-8 rounded-full bg-dz-red"></div>
+          <ProductShowcase />
+
+          {/* CTA Section */}
+          <section className="py-24">
+            <div className="container mx-auto px-6">
+              <div className="bg-emerald-600 rounded-[4rem] p-12 lg:p-24 relative overflow-hidden group">
+                {/* Decorative circles */}
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:scale-110 transition-transform duration-1000"></div>
+                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl group-hover:scale-110 transition-transform duration-1000"></div>
+
+                <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto">
+                  <h2 className="text-4xl lg:text-6xl font-black text-white mb-8 leading-tight">
+                    Start Your Fresh Farm Journey Today
+                  </h2>
+                  <p className="text-emerald-50 text-xl lg:text-2xl font-medium mb-12 opacity-90 leading-relaxed">
+                    Connecting Algeria's citizens with quality agriculture. Trusted by thousands across all 58 wilayas.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-6">
+                    <button className="px-10 py-5 bg-white text-emerald-600 font-black rounded-3xl text-lg hover:shadow-[0_20px_40px_-5px_rgba(255,255,255,0.3)] transition-all hover:-translate-y-1">
+                      Download Mobile App
+                    </button>
+                    <button className="px-10 py-5 bg-emerald-700 text-white font-black rounded-3xl text-lg hover:bg-emerald-800 transition-all border border-emerald-500/30">
+                      Learn More
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="max-w-7xl mx-auto px-4 mt-8 pt-8 border-t border-slate-800 text-center text-slate-500 text-xs">
-              © 2026 Souq El Fallah. Made for Algeria with ❤️.
-            </div>
-          </footer>
-        </div>
-      </Router>
+          </section>
+        </main>
+        <Footer />
+      </div>
     </AppProvider>
   );
 }
