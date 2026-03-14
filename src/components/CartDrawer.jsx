@@ -1,15 +1,14 @@
-import React, { useMemo } from 'react';
+import { useCart } from '../context/CartContext';
 import { useApp } from '../context/AppContext';
 import { X, ShoppingBag, Trash2, Plus, Minus, ArrowRight } from 'lucide-react';
 
-const CartDrawer = ({ isOpen, onClose }) => {
-    const { lang, t, cart, updateQuantity, removeFromCart, clearCart } = useApp();
+const CartDrawer = () => {
+    const { lang, t } = useApp();
+    const { cart, updateQuantity, removeFromCart, clearCart, isCartOpen, setIsCartOpen, cartTotal } = useCart();
 
-    const total = useMemo(() => {
-        return cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    }, [cart]);
+    if (!isCartOpen) return null;
 
-    if (!isOpen) return null;
+    const onClose = () => setIsCartOpen(false);
 
     return (
         <div className="fixed inset-0 z-[100] overflow-hidden">
@@ -125,7 +124,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                                 <div className="space-y-4 mb-8 text-slate-800 dark:text-slate-100">
                                     <div className="flex justify-between text-base font-medium">
                                         <p>{t('cart.subtotal')}</p>
-                                        <p className="tabular-nums font-bold text-slate-900 dark:text-white">{total} DA</p>
+                                        <p className="tabular-nums font-bold text-slate-900 dark:text-white">{cartTotal} DA</p>
                                     </div>
                                     <div className="flex justify-between text-base font-medium">
                                         <p>{t('cart.shipping')}</p>
@@ -133,7 +132,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                                     </div>
                                     <div className="flex justify-between text-xl font-black pt-4 border-t border-slate-200 dark:border-slate-700">
                                         <p>{t('cart.total')}</p>
-                                        <p className="tabular-nums text-emerald-600 dark:text-emerald-400">{total} DA</p>
+                                        <p className="tabular-nums text-emerald-600 dark:text-emerald-400">{cartTotal} DA</p>
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-4">

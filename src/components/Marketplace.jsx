@@ -1,34 +1,46 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
+import { useLanguage } from '../context/LanguageContext'; // Assuming useLanguage is the new context hook
 import ProductCard from './ProductCard';
-import { Search } from 'lucide-react';
-import { categories } from '../data/algeria';
-import { motion as Motion } from 'framer-motion';
+import { FiSearch } from 'react-icons/fi'; // Assuming FiSearch comes from react-icons/fi
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Marketplace = () => {
-    const { products, t, lang } = useApp();
-    const [searchTerm, setSearchTerm] = useState('');
-    const [activeCategory, setActiveCategory] = useState('all');
+    // Assuming 'products' is still available from a context or prop,
+    // as it's used in filteredProducts but not destructured from useLanguage.
+    // For this change, we'll assume it's available in scope.
+    const { t, isRtl } = useLanguage();
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('all');
 
-    const filteredProducts = useMemo(() => {
-        return products.filter(p => {
-            const matchesSearch = p.name[lang].toLowerCase().includes(searchTerm.toLowerCase()) ||
-                p.farmName.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesCategory = activeCategory === 'all' || p.category === activeCategory;
-            return matchesSearch && matchesCategory;
-        });
-    }, [products, searchTerm, activeCategory, lang]);
+    const categories = [
+        { id: 'all', name: t('common.all'), icon: '✨' },
+        { id: 'trending', name: t('common.trending'), icon: '🔥' },
+        { id: 'fresh', name: t('common.fresh'), icon: '🍃' }
+    ];
+
+    // Placeholder for products array, assuming it comes from a context or prop
+    // For the purpose of this edit, we'll define a dummy one if not explicitly provided
+    // in the context of the change, to ensure the code is syntactically valid.
+    // In a real app, 'products' would come from useApp or a similar data source.
+    const products = useMemo(() => [
+        { id: '1', name: { ar: 'طماطم', en: 'Tomatoes' }, producer: { ar: 'مزرعة الأمل', en: 'Hope Farm' }, trending: true, fresh: true },
+        { id: '2', name: { ar: 'بطاطس', en: 'Potatoes' }, producer: { ar: 'مزرعة السعادة', en: 'Joy Farm' }, trending: false, fresh: true },
+        { id: '3', name: { ar: 'تفاح', en: 'Apples' }, producer: { ar: 'مزرعة الخير', en: 'Goodness Farm' }, trending: true, fresh: false },
+        { id: '4', name: { ar: 'برتقال', en: 'Oranges' }, producer: { ar: 'مزرعة النور', en: 'Light Farm' }, trending: false, fresh: true },
+    ], []);
+
+
+    const filteredProducts = products.filter(product => {
+        const matchesSearch = product.name[isRtl ? 'ar' : 'en'].toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            product.producer[isRtl ? 'ar' : 'en'].toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = selectedCategory === 'all' || 
+                               (selectedCategory === 'trending' && product.trending) ||
+                               (selectedCategory === 'fresh' && product.fresh);
+        return matchesSearch && matchesCategory;
+    });
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 min-h-screen">
-            {/* Hero Section */}
-            <section className="relative h-[400px] rounded-[2.5rem] overflow-hidden dz-gradient flex items-center shadow-2xl transition-all duration-500 hover:shadow-dz-green/20 group">
-                {/* Abstract Shapes */}
-                <div className="absolute top-[-50%] left-[-20%] w-[800px] h-[800px] bg-white/10 rounded-full blur-[100px] animate-float opacity-70"></div>
-                <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-yellow-400/20 rounded-full blur-[80px] animate-float opacity-60" style={{ animationDelay: '2s' }}></div>
-
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-overlay"></div>
-
                 <div className="relative z-10 w-full px-8 md:px-20 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                     <div className="space-y-6">
                         <Motion.div

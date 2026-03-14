@@ -1,68 +1,50 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
+import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
+import Navbar from './components/layout/Navbar';
+import CartDrawer from './components/CartDrawer';
+import Home from './pages/Home';
+import Marketplace from './pages/Marketplace';
+import Farmers from './pages/Farmers';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Login from './pages/Login';
+import Footer from './components/layout/Footer';
 
-// Pages
-import Landing from './pages/Landing';
-
-// Components
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import Marketplace from './components/Marketplace';
-import ProductDetail from './components/ProductDetail';
-import Cart from './components/Cart';
-import Traceability from './components/Traceability';
-import ProducerProfile from './components/ProducerProfile';
-import TrustExplorer from './components/TrustExplorer';
-import BackgroundAnimation from './components/BackgroundAnimation';
-import AuthForms from './components/AuthForms';
-import FarmerDashboard from './components/FarmerDashboard';
-import Checkout from './components/Checkout';
-
-const ProtectedRoute = ({ children, role }) => {
-    const { user } = useApp();
-    if (!user) return <Navigate to="/login" />;
-    if (role && user.role !== role) return <Navigate to="/" />;
-    return children;
-};
-
-function AppContent() {
-    return (
-        <div className="min-h-screen bg-slate-50 font-outfit selection:bg-dz-green selection:text-white">
-            <BackgroundAnimation />
-            <Navbar />
-            <main className="relative pt-24 pb-12">
-                <Routes>
-                    <Route path="/" element={<Landing />} />
-                    <Route path="/marketplace" element={<Marketplace />} />
-                    <Route path="/product/:id" element={<ProductDetail />} />
-                    <Route path="/trace/:id" element={<Traceability />} />
-                    <Route path="/producer/:id" element={<ProducerProfile />} />
-                    <Route path="/trust" element={<TrustExplorer />} />
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-                    <Route path="/login" element={<AuthForms mode="login" />} />
-                    <Route path="/signup" element={<AuthForms mode="signup" />} />
-                    <Route path="/dashboard" element={
-                        <ProtectedRoute role="farmer">
-                            <FarmerDashboard />
-                        </ProtectedRoute>
-                    } />
-                </Routes>
-            </main>
-            <Footer />
-        </div>
-    );
+// Inner wrapper reads darkMode from context and applies it to the root div
+function AppShell() {
+  const { isDarkMode } = useApp();
+  return (
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark' : ''}`}>
+      <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50">
+        <Navbar />
+        <CartDrawer />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/farmers" element={<Farmers />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+        <Footer />
+      </div>
+    </div>
+  );
 }
 
 function App() {
-    return (
-        <AppProvider>
-            <Router>
-                <AppContent />
-            </Router>
-        </AppProvider>
-    );
+  return (
+    <AppProvider>
+      <AuthProvider>
+        <CartProvider>
+          <AppShell />
+        </CartProvider>
+      </AuthProvider>
+    </AppProvider>
+  );
 }
 
 export default App;
