@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { ShoppingCart, Heart, Star, ChevronRight, Zap } from 'lucide-react';
+import { ShoppingCart, Heart, Star, ChevronRight, Zap, QrCode } from 'lucide-react';
 
 const ProductShowcase = () => {
     const { t } = useApp();
@@ -15,7 +15,8 @@ const ProductShowcase = () => {
             category: "Essentials",
             img: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?q=80&w=1887&auto=format&fit=crop",
             tag: "Bestseller",
-            rating: 5.0
+            rating: 5.0,
+            traceId: "TR-HN-001"
         },
         {
             name: "Fresh Tomatoes",
@@ -23,7 +24,8 @@ const ProductShowcase = () => {
             category: "Vegetables",
             img: "https://images.unsplash.com/photo-1582284540020-8acbe03f4924?q=80&w=1935&auto=format&fit=crop",
             tag: "Farm Fresh",
-            rating: 4.8
+            rating: 4.8,
+            traceId: "TR-TM-042"
         },
         {
             name: "Sweet Dates",
@@ -31,7 +33,8 @@ const ProductShowcase = () => {
             category: "Fruits",
             img: "https://images.unsplash.com/photo-1547514701-42782101795e?q=80&w=1887&auto=format&fit=crop",
             tag: "Sahara Gold",
-            rating: 4.9
+            rating: 4.9,
+            traceId: "TR-DT-088"
         },
         {
             name: "Extra Virgin olive Oil",
@@ -39,7 +42,8 @@ const ProductShowcase = () => {
             category: "Essentials",
             img: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?q=80&w=1918&auto=format&fit=crop",
             tag: "Premium",
-            rating: 4.7
+            rating: 4.7,
+            traceId: "TR-OL-009"
         }
     ];
 
@@ -79,10 +83,14 @@ const ProductShowcase = () => {
                                     alt={product.name} 
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                 />
-                                <div className="absolute top-4 left-4">
-                                    <span className="px-4 py-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl text-[10px] font-black uppercase tracking-widest text-emerald-600 shadow-xl">
+                                <div className="absolute top-4 left-4 flex flex-col gap-2">
+                                    <span className="px-4 py-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl text-[10px] font-black uppercase tracking-widest text-emerald-600 shadow-xl w-fit">
                                         {product.tag}
                                     </span>
+                                    <div className="flex items-center gap-2 px-3 py-2 bg-emerald-600/90 backdrop-blur-md rounded-2xl text-[9px] font-black text-white shadow-xl w-fit opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-[-10px] group-hover:translate-x-0">
+                                        <QrCode className="w-3 h-3" />
+                                        TRACEABLE
+                                    </div>
                                 </div>
                                 <button className="absolute top-4 right-4 w-10 h-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-full flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors shadow-xl">
                                     <Heart className="w-5 h-5" />
@@ -99,11 +107,16 @@ const ProductShowcase = () => {
 
                             {/* Product Info */}
                             <div className="p-8 pt-4">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <div className="flex text-amber-500">
-                                        {[1,2,3,4,5].map(i => <Star key={i} className="w-3 h-3 fill-current" />)}
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex text-amber-500">
+                                            {[1,2,3,4,5].map(i => <Star key={i} className="w-3 h-3 fill-current" />)}
+                                        </div>
+                                        <span className="text-xs font-black text-slate-400">({product.rating})</span>
                                     </div>
-                                    <span className="text-xs font-black text-slate-400">({product.rating})</span>
+                                    <span className="text-[10px] font-bold text-slate-400 font-mono tracking-tighter">
+                                        {product.traceId}
+                                    </span>
                                 </div>
                                 
                                 <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2 group-hover:text-emerald-600 transition-colors">
@@ -114,8 +127,17 @@ const ProductShowcase = () => {
                                     <p className="text-2xl font-black text-emerald-600">
                                         {product.price}
                                     </p>
-                                    <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all cursor-pointer">
-                                        <ChevronRight className="w-6 h-6" />
+                                    <div className="group/details relative">
+                                        <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all cursor-pointer">
+                                            <ChevronRight className="w-6 h-6" />
+                                        </div>
+                                        {/* Hover Tooltip for Traceability */}
+                                        <div className="absolute bottom-full right-0 mb-4 w-32 opacity-0 group-hover/details:opacity-100 transition-opacity pointer-events-none">
+                                            <div className="bg-slate-900 text-white text-[10px] font-black p-3 rounded-2xl shadow-2xl relative">
+                                                Trace Origin
+                                                <div className="absolute top-full right-4 border-8 border-transparent border-t-slate-900"></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

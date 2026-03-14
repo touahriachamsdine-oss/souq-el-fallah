@@ -20,20 +20,19 @@ const Traceability = () => {
     }
 
     const journey = [
-        { status: 'Harvested', date: 'Oct 12, 2023', icon: Sprout, color: 'text-dz-green', desc: 'Hand-picked at peak ripeness.' },
-        { status: 'Quality Assured', date: 'Oct 13, 2023', icon: ShieldCheck, color: 'text-blue-600', desc: 'Passed local safety & pesticide tests.' },
-        { status: 'Packaged', date: 'Oct 14, 2023', icon: Award, color: 'text-amber-500', desc: 'Eco-friendly packaging applied.' },
-        { status: 'Shipped', date: 'Oct 15, 2023', icon: Truck, color: 'text-dz-red', desc: 'On its way to Souq El Fallah.' },
+        { status: 'Harvesting', date: '21 Oct 2023', desc: 'Hand-picked at peak ripeness in Mascara farms.', icon: Sprout, color: 'text-emerald-500' },
+        { status: 'Quality Inspection', date: '22 Oct 2023', desc: 'Passed laboratory checks for pesticide absence.', icon: ShieldCheck, color: 'text-blue-500' },
+        { status: 'Cold Storage', date: '23 Oct 2023', desc: 'Maintained at 4°C to preserve nutrients and freshness.', icon: Award, color: 'text-amber-500' },
+        { status: 'Transit to Hub', date: '24 Oct 2023', desc: 'Dispatched in refrigerated trucks to central Algiers.', icon: Truck, color: 'text-slate-500' }
     ];
 
     return (
-        <div className="max-w-3xl mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto px-4 py-12">
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass-card shadow-2xl overflow-hidden rounded-[2rem] border-none"
+                className="bg-white rounded-[40px] shadow-2xl shadow-dz-green/5 overflow-hidden border border-slate-100"
             >
-                {/* Badge Header */}
                 <div className="bg-dz-green p-6 text-white text-center">
                     <div className="inline-flex items-center space-x-2 bg-white/20 px-4 py-1 rounded-full mb-3">
                         <CheckCircle size={16} />
