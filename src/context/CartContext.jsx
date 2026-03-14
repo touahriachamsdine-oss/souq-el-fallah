@@ -3,19 +3,40 @@ import React, { createContext, useContext, useState, useEffect, useMemo } from '
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-    const [cart, setCart] = useState(() => {
+    const [cart, setCart] = useState([]);
+
+    // Load cart from localStorage on initial mount
+    useEffect(() => {
         const saved = localStorage.getItem('souq_cart');
         try {
-            return saved ? JSON.parse(saved) : [];
+            if (saved) {
+                setCart(JSON.parse(saved));
+            }
         } catch (e) {
             console.error('Error parsing cart from localStorage', e);
-            return [];
+            setCart([]);
         }
-    });
+    }, []); // Empty dependency array ensures this runs only once on mount
 
+    // Save cart to localStorage whenever it changes
     useEffect(() => {
         localStorage.setItem('souq_cart', JSON.stringify(cart));
     }, [cart]);
+
+    const [isCartOpen, setIsCartOpen] = useState(false);
+
+    // Effect to handle body scroll locking when cart is open
+    useEffect(() => {
+        if (isCartOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        // Cleanup function to reset overflow when component unmounts or isCartOpen changes
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isCartOpen]);
 
     const addToCart = (product) => {
         setCart(prev => {
@@ -53,6 +74,8 @@ export const CartProvider = ({ children }) => {
         cart.reduce((sum, item) => sum + item.quantity, 0),
     [cart]);
 
+    // The context value should be memoized to prevent unnecessary re-renders of consumers
+    // unless the dependencies actually change.
     const value = useMemo(() => ({
         cart,
         addToCart,
@@ -60,8 +83,10 @@ export const CartProvider = ({ children }) => {
         updateQuantity,
         clearCart,
         cartTotal,
-        cartCount
-    }), [cart, cartTotal, cartCount]);
+        cartCount,
+        isCartOpen,
+        setIsCartOpen
+    }), [cart, cartTotal, cartCount, isCartOpen, setIsCartOpen]); // Added setIsCartOpen to dependencies
 
     return (
         <CartContext.Provider value={value}>
